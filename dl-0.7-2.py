@@ -19,8 +19,11 @@ in modo continuo parte il thread MISURA, in modo step o scan chiama MEASURE_STEP
 '''
 ### CHANGELOG
 '''
+2014-11-29
+    baco nella generazione dei delays dopo introduzione del trigger ogni due step:
+        introdotta variabile globale TRIG_AFTER_STEPS e ridisegnato generatore delay
 2014-11-12
-    definita la variabile globale STEP_SIZE, per ora introdotta solo i MISURA_VELOCE
+    definita la variabile globale STEP_SIZE, per ora introdotta solo in MISURA_VELOCE
     per movimenti da ritardi maggiori a minori, riordinato il file, in modo da avere ritardi crescenti
     aggiunta possibilita di movimenti a passo non intero
 2014-10-10
@@ -245,6 +248,7 @@ MAXtravel = 120000 # massimo spostamento, da verificare
 MAXtravel_guard = 500
 
 STEP_SIZE = 2.4983 # +/- 0.0005
+TRIG_AFTER_STEPS = 2 # delay line controllers emits a trigger every two steps
 
 parser = OptionParser()
 USAGE = 'usage: %prog [options]'
@@ -380,7 +384,7 @@ class DL(Frame):
         
         ### 2014-05-16 self.ser.serWrite('su', '0') # sync off
         self.ser.serWrite('su', '1') # sync on
-        sync = '%0.4x' % 2 # 1 un trigger ogni 2 passi
+        sync = '%0.4x' % TRIG_AFTER_STEPS # 2 # 1 un trigger ogni 2 passi
         sync = sync.upper()
         self.ser.serWrite('sg', sync)
         
@@ -1790,12 +1794,14 @@ class misuraVeloce(threading.Thread):
                 if self.direction_sign == -1: # reverse chX and chY for increasing delays
                     chX.reverse()
                     chY.reverse()
-                    p = [self.starting_pos - self.t_g*self.s_s + 2*i*self.s_s for i in range(I)]
+                    p = [self.starting_pos - self.t_g*self.s_s + TRIG_AFTER_STEPS*i*self.s_s for i in range(I)]
                 else:
-                    p = [self.starting_pos + 2*i*self.s_s for i in range(I)]
+                    p = [self.starting_pos + TRIG_AFTER_STEPS*i*self.s_s for i in range(I)]
                 for i in range(I): #len(chX)):
                     ### fd.write('0' + '\t' + str(self.starting_pos + (2*i/self.s_s - self.t_g)*self.s_s) + '\t' + str(i*2*self.s_s*STEP_SIZE/2.99792458*1e-2*1e-12) + '\t' + str(chX[i]) + '\tnan\t' + str(chY[i]) + '\tnan' + '\tnan' +'\n')
-                    fd.write('0' + '\t' + str(p[i]) + '\t' + str(i*2*self.s_s*STEP_SIZE/2.99792458*1e-2*1e-12) + '\t' + str(chX[i]) + '\tnan\t' + str(chY[i]) + '\tnan' + '\tnan' +'\n')
+                    #### fd.write('0' + '\t' + str(p[i]) + '\t' + str(i*self.s_s*2*STEP_SIZE/2.99792458*1e-2*1e-12) + '\t' + str(chX[i]) + '\tnan\t' + str(chY[i]) + '\tnan' + '\tnan' +'\n')
+                    ### 2014-12-01
+                    fd.write('0' + '\t' + str(p[i]) + '\t' + str(self.s_s*TRIG_AFTER_STEPS*i*2*STEP_SIZE/2.99792458*1e-2*1e-12) + '\t' + str(chX[i]) + '\tnan\t' + str(chY[i]) + '\tnan' + '\tnan' +'\n')
                 fd.close()
                 
                 time.sleep(0.5)
