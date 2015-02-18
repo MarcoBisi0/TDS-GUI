@@ -20,7 +20,7 @@ in modo continuo parte il thread MISURA, in modo step o scan chiama MEASURE_STEP
 ### CHANGELOG
 '''
 2015-02-15
-    remove measurement type indication from file name (e.g. "_fast_")
+    removed measurement type indication from file name (e.g. "_fast_")
     
 2014-11-29
     baco nella generazione dei delays dopo introduzione del trigger ogni due step:
@@ -1736,7 +1736,7 @@ class misuraVeloce(threading.Thread):
             open('/home/marco/hp5529a/START_win', 'w').close() # starts the interferometer SW on win machine
         ### end 2014-09-25
             
-        print 'here we go in fast acquisition mode'
+        print 'here we go in fast acquisition mode - ', self.filename.get()
         while not self.ask_to_stop.isSet():
             ### 2014-05-20 ser_inter.pulse_DTR(0.001) # generates a pulse 0.001 long
             #LI.write('TRIG')
