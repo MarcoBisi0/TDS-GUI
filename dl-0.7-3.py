@@ -926,6 +926,7 @@ class DL(Frame):
                     fname += ('_' + self.filename.get())
                 ### 2015-02-18 fname += ('_' + self.measurement_mode.get() + '.dat')
                 fname += ('_' + '.dat')
+                print self.filename.get()
                 ### 2015-02-18 removed measurement type in file name
                 
                 fd = open('GRAFfname', 'w')
@@ -1736,7 +1737,7 @@ class misuraVeloce(threading.Thread):
             open('/home/marco/hp5529a/START_win', 'w').close() # starts the interferometer SW on win machine
         ### end 2014-09-25
             
-        print 'here we go in fast acquisition mode - ', self.filename.get()
+        print 'here we go in fast acquisition mode'
         while not self.ask_to_stop.isSet():
             ### 2014-05-20 ser_inter.pulse_DTR(0.001) # generates a pulse 0.001 long
             #LI.write('TRIG')
