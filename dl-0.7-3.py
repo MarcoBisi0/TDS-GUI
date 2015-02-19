@@ -925,8 +925,8 @@ class DL(Frame):
                 if self.filename.get() != '':
                     fname += ('_' + self.filename.get())
                 ### 2015-02-18 fname += ('_' + self.measurement_mode.get() + '.dat')
-                fname += ('_' + '.dat')
-                print self.filename.get()
+                fname += ('.dat')
+                print '\nnow ready for', self.filename.get()
                 ### 2015-02-18 removed measurement type in file name
                 
                 fd = open('GRAFfname', 'w')
